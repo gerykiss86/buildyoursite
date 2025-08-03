@@ -1,0 +1,106 @@
+// Development schema using SQLite for quick testing
+// Copy from schema.prisma but with SQLite provider
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  name          String
+  clientName    String?
+  description   String?
+  status        String    @default("ACTIVE")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  generations   Generation[]
+  edits         Edit[]
+  feedback      Feedback[]
+  
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Generation {
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  prompt        String
+  output        String
+  model         String
+  temperature   Float?
+  
+  generationType String
+  metadata      String?
+  
+  createdAt     DateTime  @default(now())
+  
+  edits         Edit[]
+  
+  @@index([projectId])
+  @@index([generationType])
+  @@index([createdAt])
+}
+
+model Edit {
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  generationId  String?
+  generation    Generation? @relation(fields: [generationId], references: [id], onDelete: SetNull)
+  
+  originalContent String
+  editedContent   String
+  editType        String
+  reason          String?
+  
+  createdAt     DateTime  @default(now())
+  
+  @@index([projectId])
+  @@index([generationId])
+  @@index([editType])
+}
+
+model Feedback {
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  type          String
+  content       String
+  rating        Int?
+  clientName    String?
+  
+  createdAt     DateTime  @default(now())
+  
+  @@index([projectId])
+  @@index([type])
+  @@index([rating])
+}
+
+model UsageMetric {
+  id            String    @id @default(cuid())
+  date          DateTime
+  
+  totalProjects     Int
+  aiGeneratedRatio  Float
+  manualEditRatio   Float
+  
+  generationCount   Int
+  editCount         Int
+  feedbackCount     Int
+  
+  averageRating     Float?
+  
+  createdAt     DateTime  @default(now())
+  
+  @@unique([date])
+  @@index([date])
+}

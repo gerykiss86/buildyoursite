@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BuildYourSite Test</title>
+</head>
+<body>
+    <h1>BuildYourSite API Test</h1>
+    <button onclick="testFlow()">Test Complete Flow</button>
+    <div id="output" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+        <pre id="log"></pre>
+    </div>
+
+    <script>
+        const log = (message) => {
+            document.getElementById('log').textContent += message + '\n';
+            console.log(message);
+        };
+
+        async function testFlow() {
+            log('Starting test flow...\n');
+            
+            try {
+                // 1. Create project
+                log('1. Creating project...');
+                const createRes = await fetch('/api/projects-temp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'Browser Test Project',
+                        clientName: 'Test Client',
+                        description: 'Testing from browser'
+                    })
+                });
+                
+                const project = await createRes.json();
+                log('Created project: ' + JSON.stringify(project, null, 2));
+                
+                // 2. Navigate to builder
+                log('\n2. Would navigate to: /builder/' + project.id);
+                
+                // 3. Fetch project
+                log('\n3. Fetching project...');
+                const getRes = await fetch('/api/projects-temp/' + project.id);
+                const fetchedProject = await getRes.json();
+                log('Fetched: ' + JSON.stringify(fetchedProject, null, 2));
+                
+                // 4. Test generation
+                log('\n4. Testing generation...');
+                const genRes = await fetch('/api/generate-temp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        projectId: project.id,
+                        prompt: 'Create a simple hello world page',
+                        type: 'full_page'
+                    })
+                });
+                
+                if (!genRes.ok) {
+                    const error = await genRes.json();
+                    log('Generation failed: ' + JSON.stringify(error, null, 2));
+                } else {
+                    const result = await genRes.json();
+                    log('Generation successful!');
+                    log('Content preview: ' + result.content.substring(0, 100) + '...');
+                }
+                
+                log('\n✅ Test complete! You can now navigate to /builder/' + project.id);
+                
+            } catch (error) {
+                log('❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

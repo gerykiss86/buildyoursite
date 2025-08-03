@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BuildYourSite Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f5f5f5; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>BuildYourSite API Test</h1>
+    <button onclick="testFlow()">Test Complete Flow</button>
+    <button onclick="window.location.href='/'">Go to Home Page</button>
+    <div id="output">
+        <pre id="log">Click "Test Complete Flow" to start...</pre>
+    </div>
+
+    <script>
+        const log = (message) => {
+            document.getElementById('log').textContent += '\n' + message;
+            console.log(message);
+        };
+
+        async function testFlow() {
+            document.getElementById('log').textContent = 'Starting test flow...';
+            
+            try {
+                // 1. Create project
+                log('\n1. Creating project...');
+                const createRes = await fetch('/api/projects-temp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'Test Coffee Shop',
+                        clientName: 'John Doe',
+                        description: 'A modern coffee shop website'
+                    })
+                });
+                
+                const project = await createRes.json();
+                log('✅ Created project with ID: ' + project.id);
+                
+                // 2. Test fetching
+                log('\n2. Testing project fetch...');
+                const getRes = await fetch('/api/projects-temp/' + project.id);
+                const fetchedProject = await getRes.json();
+                
+                if (fetchedProject.error) {
+                    log('❌ Error fetching project: ' + fetchedProject.error);
+                } else {
+                    log('✅ Successfully fetched project: ' + fetchedProject.name);
+                }
+                
+                // 3. Create link to builder
+                log('\n3. Creating link to builder...');
+                const builderUrl = '/builder/' + project.id;
+                log('✅ Builder URL: ' + window.location.origin + builderUrl);
+                
+                log('\n4. You can now:');
+                log('   a) Click the link below to go to the builder');
+                log('   b) Or go to home page and create a new project\n');
+                
+                // Create clickable link
+                const link = document.createElement('a');
+                link.href = builderUrl;
+                link.textContent = 'Open Project in Builder →';
+                link.style.display = 'inline-block';
+                link.style.marginTop = '10px';
+                link.style.padding = '10px 20px';
+                link.style.background = '#2563eb';
+                link.style.color = 'white';
+                link.style.textDecoration = 'none';
+                link.style.borderRadius = '5px';
+                document.getElementById('output').appendChild(link);
+                
+            } catch (error) {
+                log('\n❌ Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
