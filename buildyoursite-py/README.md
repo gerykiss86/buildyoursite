@@ -29,22 +29,43 @@ Get your API key from [Anthropic Console](https://console.anthropic.com/)
 
 ## Usage
 
-### Interactive Mode
+### Generate New Website
+
+#### Interactive Mode
 ```bash
 python generate_website.py
 ```
 Then enter your prompt when asked.
 
-### Command Line Mode
+#### Command Line Mode
 ```bash
 python generate_website.py "create a modern photography agency website"
 ```
 
-### With Company Details
+#### With Company Details
 Include specific details in your prompt:
 ```bash
 python generate_website.py "create a restaurant website for 'Bella Vista Italian Bistro' with email: info@bellavista.com, phone: (555) 123-4567, address: 123 Main St, New York, NY 10001"
 ```
+
+### Fine-tune Existing Website
+
+#### Fine-tune with Instructions
+```bash
+# Modify an existing website
+python generate_website.py --fine-tune output/agency_20250816_235003 "Change to dark mode and add testimonials section"
+
+# Short flag version
+python generate_website.py -f output/agency_20250816_235003 "Update the hero section with video background"
+```
+
+#### Interactive Fine-tuning
+```bash
+# Will prompt for modification instructions
+python generate_website.py --fine-tune output/agency_20250816_235003
+```
+
+Fine-tuning creates a new timestamped version while preserving the original.
 
 ## Supported Website Types
 

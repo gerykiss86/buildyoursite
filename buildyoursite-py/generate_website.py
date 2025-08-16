@@ -8,9 +8,10 @@ import os
 import sys
 import json
 import re
+import argparse
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 import anthropic
 from dotenv import load_dotenv
 
@@ -279,6 +280,134 @@ Return ONLY the JSX code starting with 'const' and ending with the export statem
         
         return html_template
     
+    def load_existing_website(self, folder_path: Path) -> Tuple[str, str]:
+        """Load existing JSX and HTML content from a folder."""
+        jsx_path = folder_path / "component.jsx"
+        html_path = folder_path / "index.html"
+        
+        if not jsx_path.exists():
+            raise FileNotFoundError(f"JSX file not found: {jsx_path}")
+        if not html_path.exists():
+            raise FileNotFoundError(f"HTML file not found: {html_path}")
+        
+        with open(jsx_path, 'r', encoding='utf-8') as f:
+            jsx_content = f.read()
+        
+        with open(html_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        
+        return jsx_content, html_content
+    
+    def fine_tune_website(self, folder_path: str, instruction: str) -> Path:
+        """Fine-tune an existing website based on instructions."""
+        folder_path = Path(folder_path)
+        
+        print("🔧 Fine-tuning existing website...")
+        print(f"📁 Loading from: {folder_path}")
+        print(f"📝 Instruction: {instruction}\n")
+        
+        # Load existing content
+        try:
+            jsx_content, html_content = self.load_existing_website(folder_path)
+        except FileNotFoundError as e:
+            print(f"❌ Error: {e}")
+            raise
+        
+        # Extract component name from JSX
+        component_match = re.search(r'const\s+(\w+)\s*=', jsx_content)
+        component_name = component_match.group(1) if component_match else 'Website'
+        
+        # Create fine-tuning prompt
+        fine_tune_prompt = f"""You have an existing React JSX component for a website. Please modify it according to the following instruction:
+
+{instruction}
+
+IMPORTANT:
+1. Return ONLY the modified JSX code
+2. Maintain the same component structure and name ({component_name})
+3. Keep all existing functionality unless explicitly asked to change
+4. Ensure the component remains self-contained
+5. Do not include import statements or explanations
+6. Start with 'const' and end with the export statement
+
+Here is the current JSX component:
+
+{jsx_content}
+
+Return the complete modified JSX component."""
+        
+        print("🎨 Applying modifications...")
+        
+        try:
+            response = self.client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=8000,
+                temperature=0.7,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": fine_tune_prompt
+                    }
+                ]
+            )
+            
+            new_jsx_content = response.content[0].text
+            
+            # Clean up the response
+            new_jsx_content = re.sub(r'^```jsx?\n?', '', new_jsx_content, flags=re.MULTILINE)
+            new_jsx_content = re.sub(r'\n?```$', '', new_jsx_content, flags=re.MULTILINE)
+            
+            # Ensure it starts with const
+            if not new_jsx_content.strip().startswith('const'):
+                match = re.search(r'(const\s+\w+\s*=.*?export\s+default\s+\w+;?)', new_jsx_content, re.DOTALL)
+                if match:
+                    new_jsx_content = match.group(1)
+            
+            # Extract company name from existing HTML
+            title_match = re.search(r'<title>([^<]+)</title>', html_content)
+            company_name = title_match.group(1) if title_match else 'Website'
+            
+            # Create new HTML wrapper with updated JSX
+            new_html_content = self.create_html_wrapper(new_jsx_content, company_name)
+            
+            # Save to new timestamped folder
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            new_folder_name = folder_path.name.rsplit('_', 1)[0] + f"_updated_{timestamp}"
+            output_path = folder_path.parent / new_folder_name
+            output_path.mkdir(parents=True, exist_ok=True)
+            
+            # Save files
+            jsx_path = output_path / "component.jsx"
+            with open(jsx_path, 'w', encoding='utf-8') as f:
+                f.write(new_jsx_content)
+            
+            html_path = output_path / "index.html"
+            with open(html_path, 'w', encoding='utf-8') as f:
+                f.write(new_html_content)
+            
+            # Create update log
+            log_content = f"""# Website Update Log
+
+## Update Information
+- Original: {folder_path}
+- Updated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+- Instruction: {instruction}
+
+## Files
+- `index.html` - Updated website
+- `component.jsx` - Updated React component
+"""
+            
+            log_path = output_path / "UPDATE_LOG.md"
+            with open(log_path, 'w', encoding='utf-8') as f:
+                f.write(log_content)
+            
+            return output_path
+            
+        except Exception as e:
+            print(f"❌ Error during fine-tuning: {e}")
+            raise
+    
     def save_output(self, jsx_content: str, html_content: str, project_name: str):
         """Save the generated files to the output directory."""
         # Create output directory with timestamp
@@ -352,33 +481,88 @@ Simply open `index.html` in any modern web browser. No build process required!
 
 def main():
     """Main entry point."""
+    parser = argparse.ArgumentParser(
+        description='Website Generator - Powered by Claude AI',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Generate a new website:
+  python generate_website.py "Create a modern photography agency website"
+  
+  # Fine-tune an existing website:
+  python generate_website.py --fine-tune output/agency_20250816_235003 "Change the color scheme to dark mode and add a testimonials section"
+        """
+    )
+    
+    parser.add_argument(
+        'prompt',
+        nargs='*',
+        help='Website requirements or fine-tuning instructions'
+    )
+    
+    parser.add_argument(
+        '--fine-tune', '-f',
+        metavar='FOLDER',
+        help='Path to existing website folder to fine-tune'
+    )
+    
+    args = parser.parse_args()
+    
+    # Show header
     print("=" * 60)
     print("Website Generator - Powered by Claude AI")
     print("=" * 60)
     
-    # Get user input
-    if len(sys.argv) > 1:
-        # Use command line argument
-        prompt = ' '.join(sys.argv[1:])
+    # Determine mode and get input
+    if args.fine_tune:
+        # Fine-tuning mode
+        if not args.prompt:
+            print("\n🔧 FINE-TUNING MODE")
+            print(f"📁 Website folder: {args.fine_tune}")
+            print("\nEnter your modification instructions:")
+            print("Example: 'Change the hero section to feature a video background'")
+            print("-" * 60)
+            instruction = input("Instructions: ").strip()
+        else:
+            instruction = ' '.join(args.prompt)
+        
+        if not instruction:
+            print("❌ No instructions provided. Exiting.")
+            return
+        
+        # Initialize generator and fine-tune website
+        try:
+            generator = WebsiteGenerator()
+            output_path = generator.fine_tune_website(args.fine_tune, instruction)
+            print(f"\n✅ Website updated successfully!")
+            print(f"📁 Updated version saved to: {output_path}")
+            print(f"🌐 Open {output_path / 'index.html'} in your browser to view the updated website")
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+            sys.exit(1)
+    
     else:
-        # Interactive mode
-        print("\nEnter your website requirements:")
-        print("Example: 'Create a modern photography agency website'")
-        print("You can include: company name, email, phone, address, etc.")
-        print("-" * 60)
-        prompt = input("Your prompt: ").strip()
-    
-    if not prompt:
-        print("❌ No prompt provided. Exiting.")
-        return
-    
-    # Initialize generator and create website
-    try:
-        generator = WebsiteGenerator()
-        generator.generate(prompt)
-    except Exception as e:
-        print(f"\n❌ Error: {e}")
-        sys.exit(1)
+        # Generation mode
+        if args.prompt:
+            prompt = ' '.join(args.prompt)
+        else:
+            print("\nEnter your website requirements:")
+            print("Example: 'Create a modern photography agency website'")
+            print("You can include: company name, email, phone, address, etc.")
+            print("-" * 60)
+            prompt = input("Your prompt: ").strip()
+        
+        if not prompt:
+            print("❌ No prompt provided. Exiting.")
+            return
+        
+        # Initialize generator and create website
+        try:
+            generator = WebsiteGenerator()
+            generator.generate(prompt)
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+            sys.exit(1)
 
 
 if __name__ == "__main__":
