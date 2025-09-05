@@ -1,0 +1,6 @@
+# Interactive Playwright Session
+# Edit this file and save to execute commands
+# Last non-comment line will be executed
+
+# Check if Export menuitem is disabled
+page.locator('[role="menuitem"]:has-text("Export")').get_attribute("data-disabled")

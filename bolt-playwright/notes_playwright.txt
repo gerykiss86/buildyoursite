@@ -1,0 +1,9 @@
+python -m playwright install
+
+npx playwright open --browser=chromium
+
+npx playwright open --browser=chromium --channel=chrome --user-data-dir="C:\Users\info\AppData\Local\Google\Chrome\User Data" --profile-directory="Default"
+
+
+python generate-bolt-site.py "Create a simple calculator" --output downloads
+

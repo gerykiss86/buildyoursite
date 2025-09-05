@@ -1,0 +1,155 @@
+{
+  "cookies": [
+    {
+      "name": "ajs_anonymous_id",
+      "value": "cc7cdf13-c20d-4643-b642-874a8bc1f2e3",
+      "domain": "bolt.new",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.123623284.1757109893",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1764885892,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1479341802.1757109893",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1791669892.590338,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_rdt_uuid",
+      "value": "1757109892615.0bb1ecbc-778e-4d14-9fa3-49e10296c3a5",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1764885892,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "__hstc",
+      "value": "69929231.c3c074b115bac309772254af177ddbec.1757109892687.1757109892687.1757109892687.1",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1772661892,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "hubspotutk",
+      "value": "c3c074b115bac309772254af177ddbec",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1772661892,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__hssrc",
+      "value": "1",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__hssc",
+      "value": "69929231.1.1757109892687",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1757111692,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_fbp",
+      "value": "fb.1.1757109892711.31574724818839873",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1764885892,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ahoy_visitor",
+      "value": "3e346744-bcfc-40bd-bced-874cd01dbd76",
+      "domain": "stackblitz.com",
+      "path": "/",
+      "expires": 1791669896.840175,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ahoy_visit",
+      "value": "d0a66ce8-91ad-41ec-8101-91f0453579bb",
+      "domain": "stackblitz.com",
+      "path": "/",
+      "expires": 1757124296.840229,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_SLJ4P1NJFR",
+      "value": "GS2.1.s1757109892$o1$g1$t1757109921$j31$l0$h0",
+      "domain": ".bolt.new",
+      "path": "/",
+      "expires": 1791669921.888541,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://bolt.new",
+      "localStorage": [
+        {
+          "name": "lastExternalReferrer",
+          "value": "empty"
+        },
+        {
+          "name": "lastExternalReferrerTime",
+          "value": "1757109892707"
+        },
+        {
+          "name": "_gcl_ls",
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":0,\"timeouts\":0,\"creationTimeMs\":1757109892545},\"expires\":1764885892545}}"
+        },
+        {
+          "name": "designTokensPromptVisible",
+          "value": "true"
+        },
+        {
+          "name": "surveyLastDismissed",
+          "value": ""
+        },
+        {
+          "name": "topicsLastReferenceTime",
+          "value": "1757109892721"
+        }
+      ]
+    }
+  ]
+}
