@@ -7,3 +7,30 @@ npx playwright open --browser=chromium --channel=chrome --user-data-dir="C:\User
 
 python generate-bolt-site.py "Create a simple calculator" --output downloads
 
+---
+linux:
+ 1. Start VNC (if not running):
+  vncserver :1 -geometry 1920x1080 -depth 24
+
+  2. Connect to VNC:
+  - Server: 82.165.141.243:5901
+  - Password: changeme123
+
+  3. In VNC terminal, run:
+  cd /git/buildyoursite/bolt-playwright
+  DISPLAY=:1 python3 login-bolt-vnc.py
+
+  4. Log in manually in the Chromium browser that opens
+
+  5. Close the browser when done to save the session
+
+  The script will save your logged-in session to /git/buildyoursite/bolt-playwright/chromium-profile-linux/ which is
+   used by the generate-bolt-linux.py script.
+   
+----
+/tmp/ssh-exec.sh "cd /git/buildyoursite/bolt-playwright && xvfb-run -a python3 generate-bolt-linux.py --headless '{{ $json.data.input }}'"
+---
+ - Claude CLI: /tmp/ssh-exec.sh "su - clauderunner -c 'claude \"{{ $json.prompt }}\"'"
+  - Any other host command: /tmp/ssh-exec.sh "your-command-here '{{ $json.parameter }}'"
+---
+  
