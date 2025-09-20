@@ -33,4 +33,5 @@ linux:
  - Claude CLI: /tmp/ssh-exec.sh "su - clauderunner -c 'claude \"{{ $json.prompt }}\"'"
   - Any other host command: /tmp/ssh-exec.sh "your-command-here '{{ $json.parameter }}'"
 ---
-  
+certbot certonly --manual --preferred-challenges dns --cert-name skykey.at -d skykey.at -d '*.skykey.at' --expand
+---

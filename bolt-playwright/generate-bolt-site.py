@@ -80,22 +80,28 @@ def setup_persistent_profile():
 def generate_bolt_site(prompt, headless=False, output_dir="output"):
     """
     Generate and export a bolt.new site with the given prompt
-    
+
     Args:
         prompt: The prompt to use for site generation
         headless: Whether to run in headless mode (default: False)
         output_dir: Directory to save downloads (default: "output")
-    
+
     Returns:
-        bool: True if successful, False otherwise
+        tuple: (success: bool, folder_path: str) - True if successful and the output folder path
     """
     # Setup persistent profile for authentication
     setup_persistent_profile()
-    
+
     # Create output directory if it doesn't exist
     output_path = Path(output_dir)
     output_path.mkdir(exist_ok=True)
-    downloads_path = output_path.absolute()
+
+    # Create timestamped subfolder
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    subfolder_name = f"bolt_{timestamp}"
+    downloads_path = output_path / subfolder_name
+    downloads_path.mkdir(exist_ok=True)
+    downloads_path = downloads_path.absolute()
     
     with sync_playwright() as p:
         print(f"\n{'='*60}")
@@ -314,23 +320,24 @@ def generate_bolt_site(prompt, headless=False, output_dir="output"):
             download.save_as(str(save_path))
             
             print(f"  - File saved to: {save_path}")
-            
+
             print("\n[SUCCESS] Site generated and exported.")
+            print(f"Output folder: {downloads_path}")
             print(f"{'='*60}\n")
-            
+
             # Close browser
             browser.close()
-            return True
+            return True, str(downloads_path)
             
         except PlaywrightTimeoutError as e:
             print(f"\n[ERROR] Timeout error: {str(e)}")
             browser.close()
-            return False
-            
+            return False, None
+
         except Exception as e:
             print(f"\n[ERROR] Error: {str(e)}")
             browser.close()
-            return False
+            return False, None
 
 def main():
     """Main entry point"""
@@ -372,8 +379,11 @@ Examples:
     print("="*60)
     
     # Generate the site
-    success = generate_bolt_site(args.prompt, args.headless, args.output)
-    
+    success, folder_path = generate_bolt_site(args.prompt, args.headless, args.output)
+
+    if success:
+        print(f"\nGenerated site saved in: {folder_path}")
+
     # Exit with appropriate code
     sys.exit(0 if success else 1)
 
