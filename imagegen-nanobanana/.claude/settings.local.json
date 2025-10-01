@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(curl \"https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyCulcSi-5I5Qeslf3AIQ1GtIP8dCDaI9hU\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
