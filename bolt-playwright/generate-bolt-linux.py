@@ -45,6 +45,7 @@ def wait_for_page_stable(page, timeout=3000, check_interval=500):
     return False
 
 def generate_bolt_site(prompt, headless=True, output_dir="output"):
+    prompt = f"Prompt: {'Important instruction: Make the website extremely modern, visually stunning, and professional. Use clean responsive layouts, harmonious color palettes, consistent typography, and high-quality open-license images that perfectly match the theme. Ensure it looks like a premium, award-winning site designed by top web designers. Create a website for the following:' + prompt}"
     """
     Generate and export a bolt.new site with the given prompt
 
@@ -217,7 +218,8 @@ def generate_bolt_site(prompt, headless=True, output_dir="output"):
             
             # Start waiting for download before clicking
             with page.expect_download() as download_info:
-                page.locator('button:has-text("Download")').click()
+                # Updated selector to match the new div element structure
+                page.locator('div[role="menuitem"]:has-text("Download")').click()
                 print("  - Download button clicked, waiting for file...")
             
             # Get the download object
