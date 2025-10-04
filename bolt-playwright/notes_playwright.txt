@@ -33,5 +33,25 @@ linux:
  - Claude CLI: /tmp/ssh-exec.sh "su - clauderunner -c 'claude \"{{ $json.prompt }}\"'"
   - Any other host command: /tmp/ssh-exec.sh "your-command-here '{{ $json.parameter }}'"
 ---
+
 certbot certonly --manual --preferred-challenges dns --cert-name skykey.at -d skykey.at -d '*.skykey.at' --expand
+---
+echo "{{ $json.stdout }}" | grep 'Generated site saved in:' | sed 's/.*Generated site saved in: //' | tail -n1
+---
+/tmp/ssh-exec.sh "su clauderunner -c \"claude --dangerously-skip-permissions 'Output only this text without using any tools: hello_from_claude'\" < /dev/null"
+---
+/tmp/ssh-exec.sh "su clauderunner -c \"claude --dangerously-skip-permissions 'Output only this text without using any tools: {{ $json.stdout }}'\" < /dev/null"3
+---
+/tmp/ssh-exec.sh "su clauderunner -c \"claude --dangerously-skip-permissions '1. Unzip the zip file located in: {{ $json.stdout }} 2. Change into the extracted project folder. 3. 
+  Build the project using npm run build or appropriate build command. 4. Deploy the build output to a new subfolder under: /var/www/skykey/ (subfolder name = short company name 
+  extracted from project + demo, e.g., acme-demo). 5. Output ONLY the complete deployment URL in the format https://<subfolder>.skykey.at without any additional text or 
+  explanation.'\" < /dev/null"
+---
+/tmp/ssh-exec.sh "curl -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' -d '{\"prompt\": \"Print {{ $json.stdout }} to the console\"}'" 
+---
+curl -X GET http://127.0.0.1:5555/health
+----
+/tmp/ssh-exec.sh "curl -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' -d '{\"prompt\": \"Print {{ $json.stdout }} to the console\"}'" 
+---
+/tmp/ssh-exec.sh "curl -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' -d '{\"prompt\": \"nzip the zip file located at {{ $json.stdout }} then change into the extracted project folder then build the project using npm run build then deploy the build output to a new subfolder under /var/www/skykey/ where subfolder name is short company name from project plus demo then output ONLY the complete deployment URL in format https://subfolder.skykey.at\"}'" 
 ---

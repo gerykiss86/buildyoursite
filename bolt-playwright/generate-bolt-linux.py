@@ -45,7 +45,11 @@ def wait_for_page_stable(page, timeout=3000, check_interval=500):
     return False
 
 def generate_bolt_site(prompt, headless=True, output_dir="output"):
-    prompt = f"Prompt: {'Important instruction: Make the website extremely modern, visually stunning, and professional. Use clean responsive layouts, harmonious color palettes, consistent typography, and high-quality open-license images that perfectly match the theme. Ensure it looks like a premium, award-winning site designed by top web designers. Create a website for the following:' + prompt}"
+    #prompt = f"Prompt: {'Important instruction: Make the website extremely modern, visually stunning, and professional. Use clean responsive layouts, harmonious color palettes, consistent typography, and high-quality open-license images. Every section should have a relevant photo that perfectly matches the theme. Ensure it looks like a premium, award-winning site designed by top web designers. Create a website for the following:' + prompt}"
+    #prompt = f"Prompt: Important instruction: Make the website extremely modern, visually stunning, and professional. Use clean responsive layouts, harmonious color palettes, consistent typography, and high-quality open-license images. Every major section or service card (e.g., like 'Unsere Leistungen' with icons or short descriptions) must include a relevant image or icon that visually represents the topic. Ensure that visuals are consistent in style and color tone across all sections, enhancing the design rather than cluttering it. Create a website for the following: {prompt}"
+    prompt = f"Prompt: Important instruction: Make the website extremely modern, visually stunning, and professional with clean responsive layouts, harmonious color palettes, consistent typography, and high-quality photorealistic images. Every major section or service card (e.g., 'Unsere Leistungen') must include a relevant, photorealistic image that looks like professional photography - use realistic lighting, natural textures, and lifelike details. All images should maintain consistent photorealistic quality and style throughout. Place the company logo only in the header (not repeated elsewhere), and in the footer include the company name as part of the contact information instead of the logo. Instruct nanobanana to generate photorealistic images with professional photography quality, natural lighting, and realistic textures. Create a website for the following: {prompt}"
+
+
     """
     Generate and export a bolt.new site with the given prompt
 
