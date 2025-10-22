@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv('n8n.env')
 
 # n8n instance details
-base_url = os.getenv('N8N_URL', 'https://n8n.getmybot.pro')
+base_url = os.getenv('N8N_URL', 'https://n8n.y2k.global')
 api_key = os.getenv('N8N_API_KEY')
 
 def get_workflows():

@@ -7,7 +7,7 @@ This documentation provides comprehensive instructions for interacting with the 
 
 ```
 ┌─────────────────────────────────────────┐
-│         n8n.getmybot.pro                 │
+│         n8n.y2k.global                 │
 │         (HTTPS Frontend)                 │
 └─────────────────┬───────────────────────┘
                   │
@@ -25,12 +25,12 @@ This documentation provides comprehensive instructions for interacting with the 
 ## Credentials and Configuration
 
 ### n8n Web Interface
-- **URL**: https://n8n.getmybot.pro
+- **URL**: https://n8n.y2k.global
 - **Email**: info@kiss-it.io
 - **Password**: Theworldismine69!
 
 ### n8n API Access
-- **API Endpoint**: https://n8n.getmybot.pro/api/v1
+- **API Endpoint**: https://n8n.y2k.global/api/v1
 - **API Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MGFkODUwMS1iZTBlLTRhM2QtYTA3Mi02YjgwYjliMzU3NWEiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzU5NTc0ODExfQ.5mf1ZS6bd92j4W3Wv4xXKhxtQVHKL6yM_vke676c6kY`
 
 ### SSH Server Access
@@ -138,14 +138,14 @@ plink -i "C:\temp\ssh\waywiser\private.ppk" root@82.165.141.243 "docker exec -it
 
 List all workflows:
 ```bash
-curl -H "X-N8N-API-KEY: YOUR_API_KEY" https://n8n.getmybot.pro/api/v1/workflows
+curl -H "X-N8N-API-KEY: YOUR_API_KEY" https://n8n.y2k.global/api/v1/workflows
 ```
 
 Execute a workflow:
 ```bash
 curl -X POST -H "X-N8N-API-KEY: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  https://n8n.getmybot.pro/api/v1/workflows/WORKFLOW_ID/execute
+  https://n8n.y2k.global/api/v1/workflows/WORKFLOW_ID/execute
 ```
 
 ## Current Workflows
@@ -268,8 +268,8 @@ plink -i "C:\temp\ssh\waywiser\private.ppk" root@82.165.141.243 "free -h"
 
 | Component | Value |
 |-----------|-------|
-| n8n URL | https://n8n.getmybot.pro |
-| API Base | https://n8n.getmybot.pro/api/v1 |
+| n8n URL | https://n8n.y2k.global |
+| API Base | https://n8n.y2k.global/api/v1 |
 | SSH Host | 82.165.141.243 |
 | Docker Path | /opt/n8n |
 | Container | n8n |
@@ -284,7 +284,7 @@ plink -i "C:\temp\ssh\waywiser\private.ppk" root@82.165.141.243 "free -h"
 
 ## Notes
 
-- The n8n instance is configured to run on localhost (127.0.0.1:5678) and is accessible via reverse proxy at https://n8n.getmybot.pro
+- The n8n instance is configured to run on localhost (127.0.0.1:5678) and is accessible via reverse proxy at https://n8n.y2k.global
 - Email triggers use IMAP to monitor incoming emails
 - Workflow executions can be triggered via API, webhooks, or email
 - The system includes automated cleanup processes for bolt-playwright and claude

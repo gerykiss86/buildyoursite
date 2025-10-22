@@ -14,7 +14,7 @@ load_dotenv('n8n.env')
 
 class N8NWorkflowManager:
     def __init__(self):
-        self.base_url = os.getenv('N8N_URL', 'https://n8n.getmybot.pro')
+        self.base_url = os.getenv('N8N_URL', 'https://n8n.y2k.global')
         self.api_key = os.getenv('N8N_API_KEY')
         self.headers = {
             "Accept": "application/json",

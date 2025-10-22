@@ -1,0 +1,635 @@
+{
+  "name": "buildyoursite-googlesheets-complete",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Check Google Sheets Every Minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rs_ybm1S-SEMCufyeMXJFGWr8EFHw013oAhRtBgsccY",
+          "mode": "list",
+          "cachedResultName": "cron-joblist",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rs_ybm1S-SEMCufyeMXJFGWr8EFHw013oAhRtBgsccY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rs_ybm1S-SEMCufyeMXJFGWr8EFHw013oAhRtBgsccY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "read-sheets",
+      "name": "Read Google Sheets Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        304
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "wJu6f5i7vLG8eoYW",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from Google Sheets\nconst items = $input.all();\nconsole.log('Total rows from Google Sheets:', items.length);\n\n// Find first item without URL\nlet processItem = null;\nlet rowIndex = -1;\n\nfor (let i = 0; i < items.length; i++) {\n    const item = items[i].json;\n\n    // Check various possible URL column names\n    const urlValue = item['URL'] || item['url'] || item['B'] || item['Website'] || '';\n\n    console.log(`Row ${i + 2}: URL=\"${urlValue}\"`);\n\n    if (!urlValue || urlValue.trim() === '') {\n        processItem = item;\n        rowIndex = i + 2; // +2 because sheets are 1-indexed and have header\n        console.log(`Found row without URL at index ${rowIndex}`);\n        break;\n    }\n}\n\nif (processItem) {\n    // Get the prompt/data input\n    const prompt = processItem['Data input'] || processItem['A'] || processItem['prompt'] || '';\n\n    return [{\n        json: {\n            prompt: prompt,  // This will be used by Prepare Email Text\n            emailContent: prompt,  // Also include as emailContent for compatibility\n            row_index: rowIndex,\n            sheet_range: `B${rowIndex}`,\n            original_data: processItem\n        }\n    }];\n} else {\n    console.log('No rows without URL found');\n    return [];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        304
+      ],
+      "id": "filter-process",
+      "name": "Find First Row Without URL"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.prompt}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        864,
+        304
+      ],
+      "id": "check-data",
+      "name": "Has Data to Process?"
+    },
+    {
+      "parameters": {
+        "command": "/tmp/ssh-exec.sh \"killall -q -9 -r bolt-playwright || true\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        304
+      ],
+      "id": "cleanup-bolt",
+      "name": "Clean up bolt-playwright processes"
+    },
+    {
+      "parameters": {
+        "command": "/tmp/ssh-exec.sh \"killall -q -9 -r claude || true\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        304
+      ],
+      "id": "cleanup-claude",
+      "name": "Clean up claude processes"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9192d703-9bc1-4a1e-baaf-1f8afc82c46d",
+              "name": "emailContent",
+              "value": "={{ $('Has Data to Process?').item.json.emailContent }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1456,
+        304
+      ],
+      "id": "prepare-text",
+      "name": "Prepare Email Text"
+    },
+    {
+      "parameters": {
+        "command": "=/tmp/ssh-exec.sh \"cd /git/buildyoursite/bolt-playwright && xvfb-run -a python3 generate-bolt-linux.py --headless \\\"{{ $json.emailContent }}\\\"\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        304
+      ],
+      "id": "generate-bolt",
+      "name": "Generate Site with Bolt"
+    },
+    {
+      "parameters": {
+        "command": "=echo \"{{ $json.stdout }}\" | grep 'Generated site saved in:' | sed 's/.*Generated site saved in: //' | tail -n1"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        304
+      ],
+      "id": "parse-output",
+      "name": "Parse output folder"
+    },
+    {
+      "parameters": {
+        "command": "=/tmp/ssh-exec.sh \"echo '{\\\"prompt\\\":\\\"Follow these steps exactly and in order: 1) Change into the directory where the zip file {{ $json.stdout }} is located. 2) Run sudo unzip the zip file directly into this directory (do not use /tmp or any other location). This directory must remain the working folder for all subsequent steps. 3) Run sudo npm install if node_modules is missing, then sudo npm run build inside this working folder. 4) Perform a complete and strict quality audit of the site: - Parse every HTML, CSS, and JS file and collect every referenced asset (all images, logos, icons, fonts, stylesheets, and scripts). - For every image except the company logo, collect all <img> alt texts (or filenames if no alt) into a list of prompts, then run sudo python3 /git/buildyoursite/imagegen-nanobanana/generate_image_bulk.py \\\\\\\"prompt1\\\\\\\" \\\\\\\"prompt2\\\\\\\" \\\\\\\"prompt3\\\\\\\" ... using an extended timeout of at least 15 minutes (do not abort early). - Move generated files and the downloaded logo into /assets/images/ and update all references using sudo mv and sudo sed. - The company logo (identified by alt text containing 'logo' or by being used in header/footer) must NOT be replaced, only verified for visibility and styling. - Verify the logo in all places (header, footer, body) is visible and properly styled; adjust CSS (contrast, z-index, sizing, background) if needed. - Inspect CSS rules to ensure no text, logos, or images are hidden, clipped, or overlapping. - Confirm responsiveness across desktop and mobile breakpoints. Apply all fixes directly in the working folder and re-run sudo npm run build if needed.  rework the complete styling of the site including colors and text styles 5) Ensure the project is named properly: if the site, folder, or title contains 'New Chat' or similar placeholders, replace them everywhere (folder name, HTML <title>, metadata) with the correct company name in lowercase-hyphenated form. 6) Maintain a detailed fixes.log including all replacements, generated images, and renaming actions. 7) Deploy the build to /var/www/buildyoursite/ under a subfolder named after the company with a demo suffix (e.g. xy-demo), update nginx config, test with sudo nginx -t && sudo systemctl reload nginx, then verify via sudo curl for HTTP 200. 8) Output ONLY the final deployment URL in format https://subfolder.buildyoursite.pro with no extra text.\\\"}' | curl -s -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' --data-binary @-\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        304
+      ],
+      "id": "deploy-claude",
+      "name": "Deploy site with Claude"
+    },
+    {
+      "parameters": {
+        "command": "=echo '{{ $json.stdout }}' | grep -o '\"output\":\"[^\"]*\"' | sed 's/\"output\":\"\\(.*\\)\\\\n\"/\\1/'"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        304
+      ],
+      "id": "extract-url",
+      "name": "Extract website url"
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@kiss-it.io",
+        "toEmail": "office@buildyoursite.pro",
+        "subject": "=Website {{ $json.stdout }} has been created successfully!",
+        "html": "=The website {{ $json.stdout }} has been created successfully!<br><br>Generated from Google Sheets row {{ $('Find First Row Without URL').item.json.row_index }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        2464,
+        304
+      ],
+      "id": "send-email",
+      "name": "Send email to office",
+      "webhookId": "f0ede101-2cd5-4fe2-84fb-2699a00a51d5",
+      "credentials": {
+        "smtp": {
+          "id": "FkWu3oDMknM72J47",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.httpsms.com/v1/messages/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-Key",
+              "value": "81oCULOhIISW4z-RpbPIoVJhQ1avYDn8wFdpKK5TDS6OGU3e4fR5Ouz7U_cTvUi7"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "+436604330534"
+            },
+            {
+              "name": "content",
+              "value": "=Website {{ $('Extract website url').item.json.stdout }} has been created successfully."
+            },
+            {
+              "name": "from",
+              "value": "+4367764306871"
+            },
+            {
+              "name": "encrypted",
+              "value": false
+            },
+            {
+              "name": "request_id",
+              "value": "=buildyoursite {{ $('Extract website url').item.json.stdout }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2656,
+        208
+      ],
+      "id": "sms-rami",
+      "name": "SMS to Rami"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.httpsms.com/v1/messages/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-Key",
+              "value": "81oCULOhIISW4z-RpbPIoVJhQ1avYDn8wFdpKK5TDS6OGU3e4fR5Ouz7U_cTvUi7"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to",
+              "value": "+436645033757"
+            },
+            {
+              "name": "content",
+              "value": "=Website {{ $('Extract website url').item.json.stdout }} has been created successfully."
+            },
+            {
+              "name": "from",
+              "value": "+4367764306871"
+            },
+            {
+              "name": "encrypted",
+              "value": false
+            },
+            {
+              "name": "request_id",
+              "value": "=buildyoursite {{ $('Extract website url').item.json.stdout }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        448
+      ],
+      "id": "sms-gery",
+      "name": "SMS to Gery"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2864,
+        304
+      ],
+      "id": "merge",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rs_ybm1S-SEMCufyeMXJFGWr8EFHw013oAhRtBgsccY",
+          "mode": "list",
+          "cachedResultName": "cron-joblist"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Data input": "={{ $json[\"Data input\"] }}",
+            "url": "={{ $json.URL }}",
+            "project folder": "={{ $json[\"project folder\"] }}"
+          },
+          "matchingColumns": [
+            "Data input"
+          ],
+          "schema": [
+            {
+              "id": "Data input",
+              "displayName": "Data input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "project folder",
+              "displayName": "project folder",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "update-sheets",
+      "name": "Write URL to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        3056,
+        304
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "wJu6f5i7vLG8eoYW",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare data for Google Sheets update\nconst url = $('Extract website url').first().json.website_url || $('Extract website url').first().json.stdout;\nconst rowIndex = $('Find First Row Without URL').first().json.row_index;\nconst originalData = $('Find First Row Without URL').first().json.original_data;\nconst projectFolder = $('Parse output folder').first().json.stdout;\n\n// Get the data input value to match on\nconst dataInput = originalData['Data input'] || originalData['A'] || '';\n\nconsole.log(`Updating row ${rowIndex}:`);\nconsole.log(`- Data input (to match): \"${dataInput}\"`);\nconsole.log(`- URL to add: ${url}`);\nconsole.log(`- Project folder: ${projectFolder}`);\n\n// Output format for Google Sheets update with row matching\nreturn [{\n    json: {\n        \"Data input\": dataInput,  // Column A - used for matching\n        \"URL\": url,\n        \"project folder\": projectFolder,// Column B - value to update\n        row_index: rowIndex\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        528
+      ],
+      "id": "prepare-update",
+      "name": "Prepare Sheets Update"
+    },
+    {
+      "parameters": {
+        "mode": "raw"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3264,
+        304
+      ],
+      "id": "simple-update",
+      "name": "Log Update Success"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check Google Sheets Every Minute": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheets Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheets Data": {
+      "main": [
+        [
+          {
+            "node": "Find First Row Without URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find First Row Without URL": {
+      "main": [
+        [
+          {
+            "node": "Has Data to Process?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Data to Process?": {
+      "main": [
+        [
+          {
+            "node": "Clean up bolt-playwright processes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Clean up bolt-playwright processes": {
+      "main": [
+        [
+          {
+            "node": "Clean up claude processes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean up claude processes": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Text": {
+      "main": [
+        [
+          {
+            "node": "Generate Site with Bolt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Site with Bolt": {
+      "main": [
+        [
+          {
+            "node": "Parse output folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse output folder": {
+      "main": [
+        [
+          {
+            "node": "Deploy site with Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deploy site with Claude": {
+      "main": [
+        [
+          {
+            "node": "Extract website url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract website url": {
+      "main": [
+        [
+          {
+            "node": "Send email to office",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email to office": {
+      "main": [
+        [
+          {
+            "node": "SMS to Rami",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS to Gery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS to Rami": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS to Gery": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheets Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheets Update": {
+      "main": [
+        [
+          {
+            "node": "Write URL to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7ed3f858-0dd9-4b9f-b284-e70ecc474241",
+  "meta": {
+    "instanceId": "8f7cfe4d32c32e2fdf6e3d2ea946d8ea2fd5d805bce9c2a3148ca0ee29161a5a"
+  },
+  "id": "G5EP2eBd8hhLYPXb",
+  "tags": []
+}
