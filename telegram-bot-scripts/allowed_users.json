@@ -1,0 +1,6 @@
+{
+  "allowed_users": [    
+    {"id": 5029743530, "name": "Rami", "role": "admin"},
+	{"id": 5092208953, "name": "Gery", "role": "admin"}
+  ]
+}

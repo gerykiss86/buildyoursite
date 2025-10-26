@@ -165,7 +165,7 @@
     },
     {
       "parameters": {
-        "command": "=/tmp/ssh-exec.sh \"echo '{\\\"prompt\\\":\\\"Follow these steps exactly and in order: 1) Change into the directory where the zip file {{ $json.stdout }} is located. 2) Run sudo unzip the zip file directly into this directory (do not use /tmp or any other location). This directory must remain the working folder for all subsequent steps. 3) Run sudo npm install if node_modules is missing, then sudo npm run build inside this working folder. 4) Perform a complete and strict quality audit of the site: - Parse every HTML, CSS, and JS file and collect every referenced asset (all images, logos, icons, fonts, stylesheets, and scripts). - For every image except the company logo, collect all <img> alt texts (or filenames if no alt) into a list of prompts, then run sudo python3 /git/buildyoursite/imagegen-nanobanana/generate_image_bulk.py \\\\\\\"prompt1\\\\\\\" \\\\\\\"prompt2\\\\\\\" \\\\\\\"prompt3\\\\\\\" ... using an extended timeout of at least 15 minutes (do not abort early). - Move generated files and the downloaded logo into /assets/images/ and update all references using sudo mv and sudo sed. - The company logo (identified by alt text containing 'logo' or by being used in header/footer) must NOT be replaced, only verified for visibility and styling. - Verify the logo in all places (header, footer, body) is visible and properly styled; adjust CSS (contrast, z-index, sizing, background) if needed. - Inspect CSS rules to ensure no text, logos, or images are hidden, clipped, or overlapping. - Confirm responsiveness across desktop and mobile breakpoints. Apply all fixes directly in the working folder and re-run sudo npm run build if needed.  rework the complete styling of the site including colors and text styles 5) Ensure the project is named properly: if the site, folder, or title contains 'New Chat' or similar placeholders, replace them everywhere (folder name, HTML <title>, metadata) with the correct company name in lowercase-hyphenated form. 6) Maintain a detailed fixes.log including all replacements, generated images, and renaming actions. 7) Deploy the build to /var/www/buildyoursite/ under a subfolder named after the company with a demo suffix (e.g. xy-demo), update nginx config, test with sudo nginx -t && sudo systemctl reload nginx, then verify via sudo curl for HTTP 200. 8) Output ONLY the final deployment URL in format https://subfolder.buildyoursite.pro with no extra text.\\\"}' | curl -s -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' --data-binary @-\""
+        "command": "=/tmp/ssh-exec.sh \"echo '{\\\"prompt\\\":\\\"Follow these steps exactly and in order: 1) Change into the directory where the zip file {{ $json.stdout }} is located. 2) Run sudo unzip the zip file directly into this directory (do not use /tmp or any other location). This directory must remain the working folder for all subsequent steps. 3) Run sudo npm install if node_modules is missing, then sudo npm run build inside this working folder. 4) Perform a complete and strict quality audit of the site: - Parse every HTML, CSS, and JS file and collect every referenced asset (all images, logos, icons, fonts, stylesheets, and scripts). - For every image except the company logo, collect all <img> alt texts (or filenames if no alt) into a list of prompts, then run sudo python3 /git/buildyoursite/imagegen-nanobanana/generate_image_bulk.py \\\\\\\"prompt1\\\\\\\" \\\\\\\"prompt2\\\\\\\" \\\\\\\"prompt3\\\\\\\" ... using an extended timeout of at least 15 minutes (do not abort early). - Move generated files and the downloaded logo into /assets/images/ and update all references using sudo mv and sudo sed. - The company logo (identified by alt text containing 'logo' or by being used in header/footer) must NOT be replaced, only verified for visibility and styling. - Verify the logo in all places (header, footer, body) is visible and properly styled; adjust CSS (contrast, z-index, sizing, background) if needed. - Inspect CSS rules to ensure no text, logos, or images are hidden, clipped, or overlapping. - Confirm responsiveness across desktop and mobile breakpoints. Apply all fixes directly in the working folder and re-run sudo npm run build if needed.  rework the complete styling of the site including colors and text styles 5) Ensure the project is named properly: if the site, folder, or title contains 'New Chat' or similar placeholders, replace them everywhere (folder name, HTML <title>, metadata) with the correct company name in lowercase-hyphenated form. 6) Maintain a detailed fixes.log including all replacements, generated images, and renaming actions. - Add a timestamp based versioning to the generated js files when deploying releases 7) Deploy the build to /var/www/buildyoursite/ under a subfolder named after the company with a demo suffix (e.g. xy-demo), update nginx config, test with sudo nginx -t && sudo systemctl reload nginx, then verify via sudo curl for HTTP 200. 8) Output ONLY the final deployment URL in format https://subfolder.buildyoursite.pro with no extra text.\\\"}' | curl -s -X POST http://127.0.0.1:5555/execute -H 'Content-Type: application/json' --data-binary @-\""
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -260,7 +260,8 @@
         208
       ],
       "id": "sms-rami",
-      "name": "SMS to Rami"
+      "name": "SMS to Rami",
+      "disabled": true
     },
     {
       "parameters": {
@@ -309,7 +310,8 @@
         448
       ],
       "id": "sms-gery",
-      "name": "SMS to Gery"
+      "name": "SMS to Gery",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -626,7 +628,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7ed3f858-0dd9-4b9f-b284-e70ecc474241",
+  "versionId": "0b544c85-b947-4f05-8a49-efb3060a6775",
   "meta": {
     "instanceId": "8f7cfe4d32c32e2fdf6e3d2ea946d8ea2fd5d805bce9c2a3148ca0ee29161a5a"
   },
