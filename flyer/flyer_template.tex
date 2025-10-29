@@ -1,0 +1,414 @@
+% !TeX program = pdflatex
+% Premium Two-Sided Flyer Template - Y2K Global OÜ
+% Modern, professional design with gradient backgrounds and beautiful typography
+
+\documentclass[11pt,a4paper,twoside]{article}
+
+% Essential packages
+\usepackage[margin=0mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{eso-pic}
+\usepackage{transparent}
+\usepackage{pgfornament}
+
+% Load beautiful fonts
+\usepackage{helvet} % Helvetica
+\usepackage{avant} % Avant Garde
+\renewcommand{\familydefault}{\sfdefault} % Use sans serif by default
+
+% TikZ libraries for advanced graphics
+\usetikzlibrary{calc,patterns,angles,quotes,decorations.pathmorphing,backgrounds,positioning,fit,petri,shadows.blur,fadings}
+
+% Define brand colors
+\definecolor{y2kblack}{RGB}{20,20,20}
+\definecolor{y2kdark}{RGB}{30,30,35}
+\definecolor{y2kgray}{RGB}{242,242,242}
+\definecolor{y2kaccent}{RGB}{255,193,7} % Golden accent
+\definecolor{y2kblue}{RGB}{41,128,185}
+\definecolor{y2kgreen}{RGB}{39,174,96}
+\definecolor{y2kpurple}{RGB}{155,89,182}
+\definecolor{gradientstart}{RGB}{52,152,219}
+\definecolor{gradientend}{RGB}{155,89,182}
+
+% Company information
+\newcommand{\CompanyMain}{Y2K Global OÜ}
+\newcommand{\CompanyPartner}{KISS IT Solutions e.U.}
+\newcommand{\Street}{Sebastian-Kneipp-Gasse 9/18}
+\newcommand{\City}{1020 Wien}
+\newcommand{\Mail}{office@y2k.global}
+\newcommand{\Phone}{+43 1 442 20 143}
+\newcommand{\Web}{www.y2k.global}
+\newcommand{\LogoFile}{y2k-logo-schwarz 512.png}
+
+% Pricing
+\newcommand{\Monthly}{49{,}90\,€}
+\newcommand{\Yearly}{499\,€}
+\newcommand{\Validity}{4 Wochen}
+
+% Configure hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=y2kblue,
+    urlcolor=y2kblue,
+    pdftitle={Y2K Global - Professional Web Solutions},
+    pdfauthor={Y2K Global OÜ}
+}
+
+% Custom commands for styling
+\newcommand{\sectionstyle}[1]{%
+    \par\vspace{8mm}%
+    {\fontfamily{pag}\selectfont\Huge\bfseries\color{y2kdark}#1}%
+    \par\vspace{4mm}%
+}
+
+\newcommand{\subsectionstyle}[1]{%
+    \par\vspace{4mm}%
+    {\Large\bfseries\color{y2kblue}#1}%
+    \par\vspace{2mm}%
+}
+
+% Remove page numbers
+\pagestyle{empty}
+
+% Start document
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PAGE 1 - FRONT SIDE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create gradient background
+\begin{tikzpicture}[remember picture,overlay]
+    % Top gradient
+    \shade[top color=gradientstart!20,bottom color=white,opacity=0.8]
+        (current page.north west) rectangle ([yshift=-12cm]current page.north east);
+
+    % Bottom gradient
+    \shade[bottom color=gradientend!10,top color=white,opacity=0.6]
+        ([yshift=8cm]current page.south west) rectangle (current page.south east);
+
+    % Decorative geometric patterns
+    \foreach \i in {1,...,8} {
+        \node[opacity=0.03,rotate=45] at ($(current page.north west)+(2*\i,{-2-0.5*\i})$)
+            {\fontsize{200}{200}\selectfont\color{y2kblue}◆};
+    }
+
+    % Corner ornament
+    \node[opacity=0.1] at (current page.north east) [anchor=north east,xshift=-5mm,yshift=-5mm]
+        {\pgfornament[width=3cm,color=y2kpurple]{63}};
+\end{tikzpicture}
+
+% Content container
+\begin{tikzpicture}[remember picture,overlay]
+    % Header with logo
+    \node at ($(current page.north)+(0,-3.5cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            \vspace{1cm}
+            % Logo
+            \includegraphics[width=5cm]{\LogoFile}\\[8mm]
+
+            % Main headline with shadow effect
+            \begin{tcolorbox}[
+                colback=white,
+                colframe=white,
+                boxrule=0pt,
+                arc=8mm,
+                fuzzy shadow={2mm}{-2mm}{0mm}{0.3mm}{y2kgray}
+            ]
+                \centering
+                {\fontfamily{pag}\selectfont\fontsize{32}{38}\selectfont\bfseries\color{y2kdark}
+                Ihre neue Webseite}\\[3mm]
+                {\fontsize{24}{28}\selectfont\color{y2kblue}
+                Professionell • Modern • Fixfertig}
+            \end{tcolorbox}
+
+            \vspace{5mm}
+
+            % Subheadline
+            \begin{tcolorbox}[
+                colback=gradientstart!5,
+                colframe=gradientstart!30,
+                boxrule=1pt,
+                arc=4mm,
+                width=0.8\textwidth,
+                center
+            ]
+                \centering\large
+                Wir haben für Sie bereits eine \textbf{Demo-Homepage} mit\\
+                \textbf{echten Daten und Ihrem Logo} vorbereitet!\\[2mm]
+                \faIcon{check-circle} Überzeugen Sie sich live von Ihrer künftigen Online-Präsenz
+            \end{tcolorbox}
+        \end{minipage}
+    };
+
+    % Features section with icons
+    \node at ($(current page.center)+(0,-1cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \begin{tcolorbox}[
+                colback=white,
+                colframe=y2kgray,
+                boxrule=0.5pt,
+                arc=4mm,
+                fuzzy shadow={1mm}{-1mm}{0mm}{0.2mm}{black!20}
+            ]
+                \subsectionstyle{\faIcon{star} Das ist inkludiert}
+
+                \begin{multicols}{2}
+                    \begin{itemize}[leftmargin=*,itemsep=3pt]
+                        \item[\faIcon{server}] \textbf{Premium Hosting} - Schnell \& sicher
+                        \item[\faIcon{file-alt}] \textbf{Bis zu 5 Unterseiten}
+                        \item[\faIcon{shield-alt}] \textbf{SSL-Zertifikat} inklusive
+                        \item[\faIcon{envelope}] \textbf{Kontaktformular} mit Spamschutz
+                        \item[\faIcon{balance-scale}] \textbf{DSGVO-konform} mit Impressum
+                        \item[\faIcon{image}] \textbf{Bildbearbeitung} professionell
+                        \item[\faIcon{search}] \textbf{SEO-Grundoptimierung}
+                        \item[\faIcon{mobile-alt}] \textbf{100\% Responsive} Design
+                    \end{itemize}
+                \end{multicols}
+            \end{tcolorbox}
+        \end{minipage}
+    };
+
+    % Price box with special offer
+    \node at ($(current page.south)+(0,6cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            \begin{tcolorbox}[
+                enhanced,
+                colback=gradient,
+                colframe=y2kaccent,
+                boxrule=2pt,
+                arc=8mm,
+                width=0.7\textwidth,
+                interior style={
+                    left color=white,
+                    right color=y2kaccent!10
+                },
+                fuzzy shadow={2mm}{-2mm}{0mm}{0.5mm}{black!30}
+            ]
+                \centering
+                {\Large\bfseries\color{y2kdark}\faIcon{tags} EINFÜHRUNGSANGEBOT}\\[4mm]
+
+                \begin{tikzpicture}
+                    \node[
+                        circle,
+                        minimum size=3.5cm,
+                        fill=white,
+                        draw=y2kaccent,
+                        line width=2pt,
+                        blur shadow={shadow blur steps=5,shadow blur extra rounding=1.5pt}
+                    ] (price) {
+                        \begin{tabular}{c}
+                            {\Large\bfseries\Monthly}\\
+                            {\small monatlich}\\[2mm]
+                            {\footnotesize oder}\\[2mm]
+                            {\Large\bfseries\Yearly}\\
+                            {\small jährlich}
+                        \end{tabular}
+                    };
+                    \node[
+                        below=3mm of price,
+                        fill=y2kgreen,
+                        text=white,
+                        rounded corners=2mm,
+                        inner sep=3mm
+                    ] {\bfseries Sie sparen 2 Monate!};
+                \end{tikzpicture}
+
+                \vspace{3mm}
+                {\small\textit{Dieses Angebot ist \Validity{} gültig}}
+            \end{tcolorbox}
+        \end{minipage}
+    };
+
+    % Footer with contact info
+    \node at ($(current page.south)+(0,1.5cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            \begin{tcolorbox}[
+                colback=y2kdark,
+                colframe=y2kdark,
+                boxrule=0pt,
+                arc=4mm,
+                width=\textwidth
+            ]
+                \centering\color{white}
+                \faIcon{globe} \href{https://\Web}{\Web} \quad
+                \faIcon{envelope} \href{mailto:\Mail}{\Mail} \quad
+                \faIcon{phone} \Phone
+            \end{tcolorbox}
+        \end{minipage}
+    };
+\end{tikzpicture}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PAGE 2 - BACK SIDE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create different gradient background for back
+\begin{tikzpicture}[remember picture,overlay]
+    % Diagonal gradient
+    \shade[left color=gradientend!15,right color=gradientstart!15,opacity=0.7]
+        (current page.north west) rectangle (current page.south east);
+
+    % Pattern overlay
+    \foreach \x in {0,4,...,20} {
+        \foreach \y in {0,4,...,28} {
+            \node[opacity=0.02] at (\x,\y) {\fontsize{30}{30}\selectfont\color{y2kpurple}⬢};
+        }
+    }
+
+    % Top banner
+    \fill[y2kdark,opacity=0.95]
+        (current page.north west) rectangle ([yshift=-3cm]current page.north east);
+\end{tikzpicture}
+
+% Content for back side
+\begin{tikzpicture}[remember picture,overlay]
+    % Header
+    \node at ($(current page.north)+(0,-1.5cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \centering\color{white}
+            {\fontfamily{pag}\selectfont\fontsize{28}{32}\selectfont\bfseries
+            Ein Blick auf Ihre künftige Webseite}
+        \end{minipage}
+    };
+
+    % Features grid
+    \node at ($(current page.north)+(0,-6cm)$) {
+        \begin{minipage}{0.9\textwidth}
+            \centering
+
+            % Screenshot placeholders with descriptions
+            \begin{tikzpicture}
+                % Main screenshot
+                \node[
+                    draw=y2kblue,
+                    line width=2pt,
+                    rounded corners=4mm,
+                    minimum width=14cm,
+                    minimum height=8cm,
+                    fill=white,
+                    blur shadow={shadow blur steps=5}
+                ] (main) {
+                    \begin{minipage}{13cm}
+                        \centering
+                        \color{y2kgray}
+                        \faIcon{desktop} {\Large Demo Ihrer Startseite}\\[5mm]
+                        \includegraphics[width=12cm,height=6cm,keepaspectratio]{\LogoFile}\\[5mm]
+                        \textit{Live-Vorschau unter: demo.y2k.global/ihrname}
+                    \end{minipage}
+                };
+
+                % Feature boxes below
+                \node[below=1cm of main.south west,anchor=north west] {
+                    \begin{minipage}{6.5cm}
+                        \begin{tcolorbox}[
+                            colback=white,
+                            colframe=y2kgreen,
+                            boxrule=1pt,
+                            arc=3mm
+                        ]
+                            \centering
+                            \faIcon{mobile-alt} \textbf{Mobile Ansicht}\\[2mm]
+                            Perfekt optimiert für\\
+                            alle Smartphones \& Tablets
+                        \end{tcolorbox}
+                    \end{minipage}
+                };
+
+                \node[below=1cm of main.south east,anchor=north east] {
+                    \begin{minipage}{6.5cm}
+                        \begin{tcolorbox}[
+                            colback=white,
+                            colframe=y2kpurple,
+                            boxrule=1pt,
+                            arc=3mm
+                        ]
+                            \centering
+                            \faIcon{tachometer-alt} \textbf{Performance}\\[2mm]
+                            Blitzschnelle Ladezeiten\\
+                            für beste Nutzererfahrung
+                        \end{tcolorbox}
+                    \end{minipage}
+                };
+            \end{tikzpicture}
+        \end{minipage}
+    };
+
+    % Why choose us section
+    \node at ($(current page.south)+(0,8cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \begin{tcolorbox}[
+                enhanced,
+                colback=white,
+                colframe=y2kblue,
+                boxrule=1pt,
+                arc=4mm,
+                drop fuzzy shadow
+            ]
+                \subsectionstyle{\faIcon{handshake} Warum Y2K Global?}
+
+                \begin{multicols}{2}
+                    \raggedright
+                    \textbf{\faIcon{rocket} Schnell startklar}\\
+                    Demo bereits mit Ihren Daten\\[3mm]
+
+                    \textbf{\faIcon{users} Alles aus einer Hand}\\
+                    Design, Technik, Hosting, SEO\\[3mm]
+
+                    \textbf{\faIcon{euro-sign} Fair \& transparent}\\
+                    Fester Paketpreis, keine Überraschungen\\[3mm]
+
+                    \textbf{\faIcon{headset} Persönlicher Support}\\
+                    Wir sind immer für Sie da
+                \end{multicols}
+            \end{tcolorbox}
+        \end{minipage}
+    };
+
+    % Call to action
+    \node at ($(current page.south)+(0,3.5cm)$) {
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            \begin{tcolorbox}[
+                enhanced,
+                colback=y2kaccent,
+                colframe=y2kaccent,
+                boxrule=0pt,
+                arc=6mm,
+                width=0.7\textwidth,
+                fuzzy shadow={2mm}{-2mm}{0mm}{0.5mm}{black!30}
+            ]
+                \centering\Large\bfseries\color{white}
+                \faIcon{phone-alt} Jetzt anrufen \& durchstarten!\\[2mm]
+                \Huge\Phone
+            \end{tcolorbox}
+        \end{minipage}
+    };
+
+    % Footer
+    \node at ($(current page.south)+(0,0.8cm)$) {
+        \begin{minipage}{0.9\textwidth}
+            \centering\footnotesize\color{y2kdark}
+            \CompanyMain{} • \CompanyPartner{} • \Street, \City\\
+            FN606200x • UID: ATU68895724 • \href{https://\Web}{\Web}
+        \end{minipage}
+    };
+\end{tikzpicture}
+
+\end{document}
